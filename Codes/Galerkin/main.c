@@ -29,9 +29,11 @@ int main (int argc, char *argv[])
 
     struct solver_data *solver = new_solver_data(argc,argv);
 
-    //solver->solve();
+    solve_linear_system(solver);
 
-    //delete solver;
+    evaluate(solver);
+
+    free_solver_data(solver);
 
     return 0;
 }

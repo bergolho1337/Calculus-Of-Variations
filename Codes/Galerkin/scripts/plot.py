@@ -10,6 +10,7 @@ def readPoints (filename):
 
     x = np.zeros(n)
     y = np.zeros(n)
+    z = np.zeros(n)
 
     for i in range(n):
         line = file.readline()
@@ -17,21 +18,15 @@ def readPoints (filename):
 
         x[i] = float(tokens[0])
         y[i] = float(tokens[1])
+        z[i] = float(tokens[2])
 
-    return x, y
+    return x, y, z
 
-def readInterpolatePoints (filename):
-    z = np.loadtxt(filename)
-    return z
-
-def showPoints (x,y):
-    plt.ylim(0,10)
-    plt.scatter(x,y)
-
-def showInterpolatePoints (z):
-    plt.ylim(0,20)
-    plt.plot(z[:,0],z[:,1])
-    plt.grid() 
+def showPoints (x,y,z):
+    #plt.ylim(0,10)
+    plt.grid()
+    plt.plot(x,y)
+    plt.plot(x,z)
     #plt.show()
 
 def writeOutput (x,y,z):
@@ -40,13 +35,10 @@ def writeOutput (x,y,z):
 def main():
 
     points_filename = sys.argv[1]
-    interpolate_filename = sys.argv[2]
     
-    x,y = readPoints(points_filename)
-    z = readInterpolatePoints(interpolate_filename)
-
-    showPoints(x,y)
-    showInterpolatePoints(z)
+    x,y,z = readPoints(points_filename)
+    
+    showPoints(x,y,z)
 
     writeOutput(x,y,z)
 

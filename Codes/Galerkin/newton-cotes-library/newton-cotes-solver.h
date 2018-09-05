@@ -11,9 +11,9 @@
 const int NSUBINTERVAL = 3600;              
 
 // Newton-Cotes rules
-double Trapezium (const double a, const double b, set_aprox_fn *f, const int n);
-double Simpson13 (const double a, const double b, set_aprox_fn *f, const int n);
-double Simpson38 (const double a, const double b, set_aprox_fn *f, const int n);
+double Trapezium (const double a, const double b, set_analit_fn *f, const int i, const int j);
+double Simpson13 (const double a, const double b, set_analit_fn *f, const int i, const int j);
+double Simpson38 (const double a, const double b, set_analit_fn *f, const int i, const int j);
 
 // Auxiliary functions
 

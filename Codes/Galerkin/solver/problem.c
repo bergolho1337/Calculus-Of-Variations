@@ -6,13 +6,19 @@ struct problem_data* new_problem (const int problem_id, const int analitical_int
 
     p->problem_name = getProblemName(problem_id);
     p->library_path = getLibraryPath(problem_id);
+
+    p->aprox = getAproxFunctions(p->handle,p->library_path);
+    p->analit = getAnaliticalFunctions(p->handle,p->library_path);
+    
+    /*
     if (analitical_integral == 0)
         p->aprox = getAproxFunctions(p->handle,p->library_path);
     else
         p->analit = getAnaliticalFunctions(p->handle,p->library_path);
+    */
 
     fprintf(stdout,"[Problem] Solving '%s'\n",p->problem_name);
-    
+
     return p;
 
 }
@@ -53,11 +59,11 @@ char* getLibraryPath (const int problem_id)
     return NULL;
 }
 
-set_aprox_fn** getAproxFunctions (void *handle, const char *library_path)
+set_analit_fn** getAproxFunctions (void *handle, const char *library_path)
 {
     fprintf(stdout,"\n[Problem] Using APROXIMATIONS to calculate the integrals from the linear system\n");
 
-    set_aprox_fn **aprox = (set_aprox_fn**)malloc(sizeof(set_aprox_fn*)*NAPROX);
+    set_analit_fn **aprox = (set_analit_fn**)malloc(sizeof(set_analit_fn*)*NAPROX);
 
     handle = dlopen(library_path,RTLD_LAZY);
     if (!handle) 
@@ -70,22 +76,22 @@ set_aprox_fn** getAproxFunctions (void *handle, const char *library_path)
         fprintf(stdout,"\n[+] Problem library \"%s\" open with sucess\n",library_path);
     }
     
-    aprox[0] = dlsym(handle,"phi");
+    aprox[0] = dlsym(handle,"Lphi_phi");
+    if (dlerror() != NULL)  
+    {
+        fprintf(stderr, "\n'Lphi_phi' function not found in the provided problem library\n");
+        exit(EXIT_FAILURE);
+    }
+    aprox[1] = dlsym(handle,"f_phi");
+    if (dlerror() != NULL)  
+    {
+        fprintf(stderr, "\n'f_phi' function not found in the provided problem library\n");
+        exit(EXIT_FAILURE);
+    }
+    aprox[2] = dlsym(handle,"phi");
     if (dlerror() != NULL)  
     {
         fprintf(stderr, "\n'phi' function not found in the provided problem library\n");
-        exit(EXIT_FAILURE);
-    }
-    aprox[1] = dlsym(handle,"Lphi");
-    if (dlerror() != NULL)  
-    {
-        fprintf(stderr, "\n'Lphi' function not found in the provided problem library\n");
-        exit(EXIT_FAILURE);
-    }
-    aprox[2] = dlsym(handle,"f");
-    if (dlerror() != NULL)  
-    {
-        fprintf(stderr, "\n'f' function not found in the provided problem library\n");
         exit(EXIT_FAILURE);
     }
 
@@ -119,6 +125,12 @@ set_analit_fn** getAnaliticalFunctions (void *handle, const char *library_path)
     if (dlerror() != NULL)  
     {
         fprintf(stderr, "\n'int_f_phi' function not found in the provided problem library\n");
+        exit(EXIT_FAILURE);
+    }
+    analit[2] = dlsym(handle,"u");
+    if (dlerror() != NULL)  
+    {
+        fprintf(stderr, "\n'u' function not found in the provided problem library\n");
         exit(EXIT_FAILURE);
     }
 

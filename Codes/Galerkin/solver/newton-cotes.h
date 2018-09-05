@@ -19,8 +19,8 @@
 // To apply the Newton-Cotes over the interpolated polynomium we need to pass 
 // the indexes of the points which defines the interval plus the degree of the polynomium 
 #define SET_NEWTON_COTES(name) EXPORT_FN double name(const double a, const double b,\
-                                                    set_aprox_fn *f,\
-                                                    const int n)
+                                                    set_analit_fn *f,\
+                                                    const int i, const int j)
 typedef SET_NEWTON_COTES(set_newton_cotes_fn);
 
 struct newton_cotes_data

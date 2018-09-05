@@ -20,6 +20,8 @@ void Usage (int argc, char *argv[])
     fprintf(stderr,"-----------------------------------------------------------------------\n");
     fprintf(stderr,"<nbasis> = Number of basis functions to use in the Galerkin method\n");
     fprintf(stderr,"-----------------------------------------------------------------------\n");  
+    fprintf(stderr,"Example:\n");
+    fprintf(stderr,"\t./bin/galerkin 1 1 0 5\n");
 }
 
 struct solver_data* new_solver_data (int argc, char *argv[])
@@ -39,10 +41,11 @@ struct solver_data* new_solver_data (int argc, char *argv[])
         s->newton_cotes = new_newton_cotes_data();
 
     // Build the linear system related to the Galerkin method
-    //build_matrix(s);
+    s->linear_system_solver->A = build_matrix(s);
     //print_matrix(s);
 
-
+    s->linear_system_solver->b = build_rhs(s);
+    //print_rhs(s);
 
     return s;
 }
@@ -63,70 +66,158 @@ void free_solver_data (struct solver_data *s)
     free(s);
 }
 
-/*
-Solver::Solver (int argc, char *argv[])
+double* build_matrix (struct solver_data *s)
 {
-    nbasis = atoi(argv[1]);
-    problem_id = atoi(argv[2]);
+    assert(s);
 
-    // Allocate memory for the linear system
-    K = new double[nbasis*nbasis];
-    F = new double[nbasis];
-    c = new double[nbasis];
-
-    build_matrix();
-    print_matrix();
-
-}
-
-Solver::~Solver ()
-{
-    cout << "[!] Cleaning Solver ..." << endl;
-    delete [] K;
-    delete [] F;
-    delete [] c;
-}
-
-void Solver::build_matrix ()
-{
-    assert(K);
-
+    uint32_t nbasis = s->nbasis;
     double a = 0.0f;
-    double b = 1.0f;
+    double b = 1.0f;    // TO DO: get this value from the problem library
+    double *K;
+
+    // Allocate memory
+    K = (double*)malloc(sizeof(double)*nbasis*nbasis);
+
+    if (s->analitical_integral)
+    {
+        set_analit_fn **analit = s->problem->analit;
+
+        for (int i = 0; i < nbasis; i++)
+        {
+            for (int j = 0; j < nbasis; j++)
+            {
+                // Lphi_phi
+                K[i*nbasis+j] = analit[0](0.0f,i+1,j+1);
+            }
+        }
+    }
+    else
+    {
+        set_analit_fn **aprox = s->problem->aprox;
+        struct newton_cotes_data *newton = s->newton_cotes;
+
+        for (int i = 0; i < nbasis; i++)
+        {
+            for (int j = 0; j < nbasis; j++)
+            {
+                // Lphi_phi
+                K[i*nbasis+j] = newton->function(a,b,aprox[0],i+1,j+1);
+            }
+        }
+    }
+
+    return K;
+}
+
+double* build_rhs (struct solver_data *s)
+{
+    assert(s);
+
+    uint32_t nbasis = s->nbasis;
+    double *F;
+    double a = 0.0f;
+    double b = 1.0f;    // TO DO: get this value from the problem library
+    
+    // Allocate memory
+    F = (double*)malloc(sizeof(double)*nbasis);
+
+    if (s->analitical_integral)
+    {
+        set_analit_fn **analit = s->problem->analit;
+
+        for (int i = 0; i < nbasis; i++)
+        {
+            // f_phi
+            F[i] = analit[1](0.0f,i+1,i+1);
+        }
+    }
+    else
+    {
+        set_analit_fn **aprox = s->problem->aprox;
+        struct newton_cotes_data *newton = s->newton_cotes;
+
+
+        for (int i = 0; i < nbasis; i++)
+        {
+            // f_phi
+            F[i] = newton->function(a,b,aprox[1],i+1,i+1);
+        }
+    }
+
+    return F;
+}
+
+void solve_linear_system (struct solver_data *s)
+{
+    assert(s);
+
+    uint32_t nbasis = s->nbasis;
+    // Allocate memory for the solution array
+    s->linear_system_solver->x = (double*)malloc(sizeof(double)*nbasis);
+
+    double *K = s->linear_system_solver->A;
+    double *F = s->linear_system_solver->b;
+    double *c = s->linear_system_solver->x;
+
+    s->linear_system_solver->solver(K,F,nbasis,c);
+
+    //for (int i = 0; i < nbasis; i++)
+    //    printf("%.10lf\n",c[i]);
+
+}
+
+void evaluate (struct solver_data *s)
+{
+    assert(s);
+
+    FILE *file = fopen("./scripts/solution.dat","w+");
+    uint32_t nbasis = s->nbasis;
+    double a = 0.0f;
+    double b = 1.0f;    // TO DO: get this value from the problem library
+    double h = (b-a) / NEVAL;
+    double *c = s->linear_system_solver->x;
+    set_analit_fn **analit = s->problem->analit;
+    set_analit_fn **aprox = s->problem->aprox;
+    
+    fprintf(file,"%d\n",NEVAL);
+
+    for (int i = 0; i < NEVAL+1; i++)
+    {
+        double x = a + i*h;
+        double value = 0.0f;
+        for (int j = 0; j < nbasis; j++)
+            value += c[j] * aprox[2](x,j+1,0);
+        fprintf(file,"%.10lf %.10lf %.10lf\n",x,analit[2](x,0,0),value);
+    }
+
+    fclose(file);
+
+}
+
+void print_matrix (struct solver_data *s)
+{
+    assert(s);
+
+    uint32_t nbasis = s->nbasis;
+    double *K = s->linear_system_solver->A;    
 
     for (int i = 0; i < nbasis; i++)
     {
         for (int j = 0; j < nbasis; j++)
-        {
-            K[i*nbasis+j] = Lphi_phi(a,b,i+1,j+1);
-        }
+            fprintf(stdout,"%.10lf ",K[i*nbasis+j]);
+        fprintf(stdout,"\n");
     }
 }
 
-void Solver::solve ()
+void print_rhs (struct solver_data *s)
 {
-    cout << "[!] Solving problem ..." << endl;
-}
+    assert(s);
 
-void Solver::print_matrix ()
-{
-    assert(K);
+    uint32_t nbasis = s->nbasis;
+    double *F = s->linear_system_solver->b;    
 
     for (int i = 0; i < nbasis; i++)
     {
-        for (int j = 0; j < nbasis; j++)
-        {
-            cout << fixed << setprecision(5) << K[i*nbasis+j] << " ";
-        }
-        cout << endl;
-    }    
+        fprintf(stdout,"%.10lf\n",F[i]);
+    }
 }
-
-double Lphi_phi (const double a, const double b, const int i, const int j)
-{
-    if (i == j)
-        return -pow(M_PI*j/b,2) * ((a+b)/2.0f);
-    else
-        return 0.0f;
-}
-*/
