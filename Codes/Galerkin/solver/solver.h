@@ -9,6 +9,8 @@
 #include <string.h>
 
 #include "linear-system.h"
+#include "problem.h"
+#include "newton-cotes.h"
 
 struct solver_data
 {
@@ -22,8 +24,8 @@ struct solver_data
     double *c;
 
     struct linear_system_data *linear_system_solver;
-    //struct newton_cotes_data *newton_cotes_solver;
-    //struct problem_data *problem;
+    struct problem_data *problem;
+    struct newton_cotes_data *newton_cotes;
 
 };
 

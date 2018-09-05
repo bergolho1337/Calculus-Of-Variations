@@ -20,6 +20,6 @@ ADD_DEPENDENCIES(galerkin solver)
 
 TARGET_LINK_LIBRARIES(galerkin solver dl m)
 
-#ADD_SUBDIRECTORY(problems-library)
+ADD_SUBDIRECTORY(problems-library)
 ADD_SUBDIRECTORY(linear-system-library)
-#ADD_SUBDIRECTORY(nonlinear-system-library)
+ADD_SUBDIRECTORY(newton-cotes-library)

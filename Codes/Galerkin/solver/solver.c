@@ -6,6 +6,8 @@ void Usage (int argc, char *argv[])
     fprintf(stderr,"Usage:> ./bin/galerkin <problem_id> <linear_system_id> <aprox_integral> <nbasis>\n");
     fprintf(stderr,"-----------------------------------------------------------------------\n");
     fprintf(stderr,"<problem_id> = Problem identifier\n");
+    fprintf(stderr,"\t1 = Problem 1\n");
+    fprintf(stderr,"\t2 = Problem 2\n");
     fprintf(stderr,"-----------------------------------------------------------------------\n");
     fprintf(stderr,"<linear_system_id> = Linear System identifier\n");
     fprintf(stderr,"\t0 = Jacobi\n");
@@ -24,12 +26,22 @@ struct solver_data* new_solver_data (int argc, char *argv[])
 {
     struct solver_data *s = (struct solver_data*)malloc(sizeof(struct solver_data));
 
+    // Parse the input form user
     s->problem_id = atoi(argv[1]);
     s->linear_system_id = atoi(argv[2]);
     s->analitical_integral = atoi(argv[3]);
     s->nbasis = atoi(argv[4]);
 
+    // Initialize the structures for solving the problem
     s->linear_system_solver = new_linear_system(s->linear_system_id);
+    s->problem = new_problem(s->problem_id,s->analitical_integral);
+    if (!s->analitical_integral)
+        s->newton_cotes = new_newton_cotes_data();
+
+    // Build the linear system related to the Galerkin method
+    //build_matrix(s);
+    //print_matrix(s);
+
 
 
     return s;
@@ -41,6 +53,12 @@ void free_solver_data (struct solver_data *s)
 
     if (s->linear_system_solver)
         free_linear_system(s->linear_system_solver);
+
+    if (s->problem)
+        free_problem(s->problem);
+
+    if (s->newton_cotes)
+        free_newton_cotes_data(s->newton_cotes);
     
     free(s);
 }

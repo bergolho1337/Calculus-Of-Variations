@@ -1,21 +1,29 @@
 #include "problem1.h"
 
-double f1 (const double x[])
+double phi (const double x, const int n)
 {
-    return (x[0]*x[0]) + (x[1]*x[1]) + (x[2]*x[2]) - 1.0f;
+    return sin(n*M_PI*x/L);
 }
 
-double f2 (const double x[])
+double Lphi (const double x, const int n)
 {
-    return (2.0f*x[0]*x[0]) + (x[1]*x[1]) - (4.0f*x[2]);
+    return -(pow(n*M_PI/L,2))*sin(n*M_PI*x/L);
 }
 
-double f3 (const double x[])
+double f (const double x, const int n)
 {
-    return (3.0f*x[0]*x[0]) - (4.0f*x[1]) + (x[2]*x[2]);
+    return q0/(A*E);
 }
 
-unsigned int getNumberEquations ()
+double int_Lphi_phi (const double x, const int i, const int j)
 {
-    return 3;
+    return -(pow(j*M_PI/L,2))*(L/2);
+}
+
+double int_f_phi (const double x, const int i, const int j)
+{
+    if (i % 2 == 0)
+        return 0.0f;
+    else
+        return -2.0f*(q0/(A*E))*(-L/(i*M_PI));
 }

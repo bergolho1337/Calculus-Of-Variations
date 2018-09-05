@@ -5,9 +5,19 @@
 #include <stdlib.h>
 #include <math.h>
 
-double f1 (const double x[]);
-double f2 (const double x[]);
-double f3 (const double x[]);
-unsigned int getNumberEquations ();
+// Constants
+const double L = 1.0f;
+const double q0 = 1.0f;
+const double A = 1.0f;
+const double E = 1.0f;
+
+// Aproximation functions
+double phi (const double x, const int n);
+double Lphi (const double x, const int n);
+double f (const double x, const int n);
+
+// Analitical functions
+double int_Lphi_phi (const double x, const int i, const int j);
+double int_f_phi (const double x, const int i, const int j);
 
 #endif
