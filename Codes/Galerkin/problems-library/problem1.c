@@ -45,3 +45,8 @@ double u (const double x, const int i, const int j)
 {
     return ( (q0*x*x)/(2.0f*A*E) ) - ( (q0*L*x)/(2.0f*A*E) ); 
 }
+
+double boundary_condition (const double x, const int i, const int j)
+{
+    return 0.0f;
+}

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,8 +26,12 @@ def readPoints (filename):
 def showPoints (x,y,z):
     #plt.ylim(0,10)
     plt.grid()
-    plt.plot(x,y)
-    plt.plot(x,z)
+    plt.plot(x,y,label="analit")
+    plt.plot(x,z,label="aprox")
+    plt.xlabel(u"x",fontsize=15)
+    plt.ylabel(u"u",fontsize=15)
+    plt.title(u"Solução Analítica x Solução Aproximada (n = 5)",fontsize=14)
+    plt.legend(loc=0,fontsize=14)
     #plt.show()
 
 def writeOutput (x,y,z):

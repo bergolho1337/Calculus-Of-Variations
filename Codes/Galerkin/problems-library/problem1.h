@@ -11,7 +11,7 @@ const double q0 = 1.0f;
 const double A = 1.0f;
 const double E = 1.0f;
 
-// Aproximation functions
+// Aproximation functions for the integral
 double phi (const double x, const int i, const int j);
 double Lphi (const double x, const int i, const int j);
 double f (const double x, const int i, const int j);
@@ -19,11 +19,14 @@ double f (const double x, const int i, const int j);
 double Lphi_phi (const double x, const int i, const int j);
 double f_phi (const double x, const int i, const int j);
 
-// Analitical functions
+// Analitical functions for the integral
 double int_Lphi_phi (const double x, const int i, const int j);
 double int_f_phi (const double x, const int i, const int j);
 
+// Analitical solution for the problem
 double u (const double x, const int i, const int j);
 
+// Boundary condition function
+double boundary_condition (const double x, const int i, const int j);
 
 #endif

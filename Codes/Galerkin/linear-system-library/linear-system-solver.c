@@ -58,7 +58,7 @@ void checkSolution (const double *A, const double *b, const double *x, const int
         fprintf(stderr,"*******************************************************************************************\n");
         exit(EXIT_FAILURE);
     }
-    fprintf(stdout,"[Linear-System-Solver] Number of iterations = %d\n",iter);
+    fprintf(stdout,"\n[Linear-System-Solver] Number of iterations = %d\n",iter);
     fprintf(stdout,"[Linear-System-Solver] Residue = %e\n",residue);
 }
 

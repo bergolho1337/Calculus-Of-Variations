@@ -9,6 +9,7 @@ struct problem_data* new_problem (const int problem_id, const int analitical_int
 
     p->aprox = getAproxFunctions(p->handle,p->library_path);
     p->analit = getAnaliticalFunctions(p->handle,p->library_path);
+    p->boundary_condition = getBoundaryConditionFunction(p->handle,p->library_path);
     
     /*
     if (analitical_integral == 0)
@@ -61,7 +62,7 @@ char* getLibraryPath (const int problem_id)
 
 set_analit_fn** getAproxFunctions (void *handle, const char *library_path)
 {
-    fprintf(stdout,"\n[Problem] Using APROXIMATIONS to calculate the integrals from the linear system\n");
+    //fprintf(stdout,"\n[Problem] Using APROXIMATIONS to calculate the integrals from the linear system\n");
 
     set_analit_fn **aprox = (set_analit_fn**)malloc(sizeof(set_analit_fn*)*NAPROX);
 
@@ -100,21 +101,16 @@ set_analit_fn** getAproxFunctions (void *handle, const char *library_path)
 
 set_analit_fn** getAnaliticalFunctions (void *handle, const char *library_path)
 {
-    fprintf(stdout,"\n[Problem] Using ANALITICAL form of the integrals for the linear system\n");
+    //fprintf(stdout,"\n[Problem] Using ANALITICAL form of the integrals for the linear system\n");
 
     set_analit_fn **analit = (set_analit_fn**)malloc(sizeof(set_analit_fn*)*NANALIT);
-
+    
     handle = dlopen(library_path,RTLD_LAZY);
     if (!handle) 
     {
         fprintf(stderr,"%s\n",dlerror());
         exit(EXIT_FAILURE);
     }
-    else
-    {
-        fprintf(stdout,"\n[+] Problem library \"%s\" open with sucess\n",library_path);
-    }
-    
     analit[0] = dlsym(handle,"int_Lphi_phi");
     if (dlerror() != NULL)  
     {
@@ -135,4 +131,26 @@ set_analit_fn** getAnaliticalFunctions (void *handle, const char *library_path)
     }
 
     return analit;
+}
+
+set_analit_fn* getBoundaryConditionFunction (void *handle, const char *library_path)
+{
+    //fprintf(stdout,"\n[Problem] Using ANALITICAL form of the integrals for the linear system\n");
+
+    set_analit_fn *boundary;
+    
+    handle = dlopen(library_path,RTLD_LAZY);
+    if (!handle) 
+    {
+        fprintf(stderr,"%s\n",dlerror());
+        exit(EXIT_FAILURE);
+    }
+    boundary = dlsym(handle,"boundary_condition");
+    if (dlerror() != NULL)  
+    {
+        fprintf(stderr, "\n'boundary_condition' function not found in the provided problem library\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return boundary;
 }

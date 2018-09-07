@@ -33,6 +33,7 @@ struct problem_data
     // analit[0] = int_Lphi_phi
     // analit[1] = int_f_phi
     // analit[2] = u
+    set_analit_fn *boundary_condition;
 };
 
 // Constructor and destructor
@@ -45,5 +46,6 @@ char* getLibraryPath (const int problem_id);
 int getNumberEquations (const char *library_path);
 set_analit_fn** getAproxFunctions (void *handle, const char *library_path);
 set_analit_fn** getAnaliticalFunctions (void *handle, const char *library_path);
+set_analit_fn* getBoundaryConditionFunction (void *handle, const char *library_path);
 
 #endif

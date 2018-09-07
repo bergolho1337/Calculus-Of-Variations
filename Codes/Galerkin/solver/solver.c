@@ -123,24 +123,30 @@ double* build_rhs (struct solver_data *s)
 
     if (s->analitical_integral)
     {
+        fprintf(stdout,"\n[Problem] Using ANALITICAL form of the integrals for the linear system\n");
+        
         set_analit_fn **analit = s->problem->analit;
+        set_analit_fn *boundary = s->problem->boundary_condition;
 
         for (int i = 0; i < nbasis; i++)
         {
             // f_phi
-            F[i] = analit[1](0.0f,i+1,i+1);
+            F[i] = analit[1](0.0f,i+1,i+1) + boundary(0.0f,i+1,i+1);
         }
     }
     else
     {
+        fprintf(stdout,"\n[Problem] Using APROXIMATIONS to calculate the integrals from the linear system\n");
+
         set_analit_fn **aprox = s->problem->aprox;
+        set_analit_fn *boundary = s->problem->boundary_condition;
         struct newton_cotes_data *newton = s->newton_cotes;
 
 
         for (int i = 0; i < nbasis; i++)
         {
             // f_phi
-            F[i] = newton->function(a,b,aprox[1],i+1,i+1);
+            F[i] = newton->function(a,b,aprox[1],i+1,i+1) + boundary(0.0f,i+1,i+1);
         }
     }
 
