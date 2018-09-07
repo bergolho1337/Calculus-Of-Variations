@@ -21,7 +21,10 @@ void Usage (int argc, char *argv[])
     fprintf(stderr,"<nbasis> = Number of basis functions to use in the Galerkin method\n");
     fprintf(stderr,"-----------------------------------------------------------------------\n");  
     fprintf(stderr,"Example:\n");
+    fprintf(stderr,"1) Solving Problem 1 with Gauss-Seidel, no aproximation for the integrals and 5 basis functions\n");
     fprintf(stderr,"\t./bin/galerkin 1 1 0 5\n");
+    fprintf(stderr,"2) Solving Problem 2 with BiCG, aproximating the integrals using Newton-Cotes and 3 basis functions\n");
+    fprintf(stderr,"\t./bin/galerkin 2 2 1 3\n");
 }
 
 struct solver_data* new_solver_data (int argc, char *argv[])
@@ -37,7 +40,7 @@ struct solver_data* new_solver_data (int argc, char *argv[])
     // Initialize the structures for solving the problem
     s->linear_system_solver = new_linear_system(s->linear_system_id);
     s->problem = new_problem(s->problem_id,s->analitical_integral);
-    if (!s->analitical_integral)
+    if (s->analitical_integral)
         s->newton_cotes = new_newton_cotes_data();
 
     // Build the linear system related to the Galerkin method
@@ -78,7 +81,7 @@ double* build_matrix (struct solver_data *s)
     // Allocate memory
     K = (double*)malloc(sizeof(double)*nbasis*nbasis);
 
-    if (s->analitical_integral)
+    if (!s->analitical_integral)
     {
         set_analit_fn **analit = s->problem->analit;
 
@@ -121,10 +124,10 @@ double* build_rhs (struct solver_data *s)
     // Allocate memory
     F = (double*)malloc(sizeof(double)*nbasis);
 
-    if (s->analitical_integral)
+    if (!s->analitical_integral)
     {
         fprintf(stdout,"\n[Problem] Using ANALITICAL form of the integrals for the linear system\n");
-        
+
         set_analit_fn **analit = s->problem->analit;
         set_analit_fn *boundary = s->problem->boundary_condition;
 

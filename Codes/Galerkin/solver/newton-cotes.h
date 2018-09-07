@@ -16,8 +16,7 @@
 // 1 = 1/3 Simpson
 // 2 = 3/8 Simpson
 
-// To apply the Newton-Cotes over the interpolated polynomium we need to pass 
-// the indexes of the points which defines the interval plus the degree of the polynomium 
+// Function pointer
 #define SET_NEWTON_COTES(name) EXPORT_FN double name(const double a, const double b,\
                                                     set_analit_fn *f,\
                                                     const int i, const int j)
