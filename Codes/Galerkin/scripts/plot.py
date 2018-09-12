@@ -26,7 +26,7 @@ def readPoints (filename):
 def showPoints (x,y,z):
     #plt.ylim(0,10)
     plt.grid()
-    plt.plot(x,y,label="analit")
+    plt.plot(x,y,label="analit",marker='o',markersize=4)
     plt.plot(x,z,label="aprox")
     plt.xlabel(u"x",fontsize=15)
     plt.ylabel(u"u",fontsize=15)

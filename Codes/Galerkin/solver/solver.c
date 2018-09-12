@@ -171,7 +171,7 @@ void solve_linear_system (struct solver_data *s)
     s->linear_system_solver->solver(K,F,nbasis,c);
 
     //for (int i = 0; i < nbasis; i++)
-    //    printf("%.10lf\n",c[i]);
+     //   printf("%.10lf\n",c[i]);
 
 }
 
